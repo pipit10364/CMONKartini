@@ -28,24 +28,25 @@
   --green:     #3a9e6f;
   --green-lt:  #e8f6ef;
   --red:       #d94f4f;
+  --timer-h:   52px;
 }
 
-body {
+html, body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100%; overflow: hidden;
 }
 
-/* ── SCREEN SYSTEM ── THE FIX ───────────────────── */
-.screen { display: none; min-height: 100vh; }
-#screen-landing.active  { display: flex; }
-#screen-game.active     { display: block; }
-#screen-finish.active   { display: flex; }
+/* ── SCREEN SYSTEM ─────────────────────────────── */
+.screen { display: none; }
+#screen-landing.active { display: flex; }
+#screen-game.active    { display: flex; }
+#screen-finish.active  { display: flex; }
 
 /* ═══ TIMER BAR ════════════════════════════════════ */
 #timer-bar {
   position: fixed;
   top: 0; left: 0; right: 0;
+  height: var(--timer-h);
   z-index: 100;
   background: rgba(255,255,255,0.93);
   backdrop-filter: blur(8px);
@@ -53,32 +54,29 @@ body {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 11px 24px;
+  padding: 0 24px;
 }
 #timer-bar.visible { display: flex; }
 .brand-mark {
   font-family: 'Fraunces', serif;
-  font-size: 15px; color: var(--purple); font-style: italic;
-  position: absolute; left: 24px;
+  font-size: 14px; color: var(--purple); font-style: italic;
+  position: absolute; left: 20px;
 }
 #timer-display {
-  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 20px; font-weight: 700;
   color: var(--charcoal); letter-spacing: 2px;
 }
 #timer-display.running { color: var(--purple); }
 #timer-display.done    { color: var(--green); }
 
-/* ═══ SAKURA PETALS ════════════════════════════════ */
+/* ═══ SAKURA ════════════════════════════════════════ */
 .sakura-wrap {
   position: absolute; inset: 0;
   pointer-events: none; overflow: hidden; z-index: 0;
 }
 .petal {
-  position: absolute;
-  top: -40px;
-  font-size: 18px;
-  opacity: 0;
+  position: absolute; top: -40px;
+  font-size: 18px; opacity: 0;
   animation: petalFall linear infinite;
   user-select: none;
 }
@@ -89,8 +87,10 @@ body {
   100% { transform: translateY(110vh) rotate(540deg) translateX(60px); opacity: 0; }
 }
 
-/* ═══ LANDING ══════════════════════════════════════ */
+/* ═══ LANDING — FIT TO SCREEN ══════════════════════ */
 #screen-landing {
+  width: 100%; height: 100vh;
+  overflow-y: auto;   /* fallback for very small phones */
   background:
     radial-gradient(ellipse at 15% 50%, rgba(114,78,145,0.13) 0%, transparent 55%),
     radial-gradient(ellipse at 85% 20%, rgba(255,119,40,0.11) 0%, transparent 50%),
@@ -99,35 +99,30 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px;
+  padding: 24px 20px;
   text-align: center;
   position: relative;
 }
 
 .deco { position: absolute; border-radius: 50%; pointer-events: none; }
 .deco-1 {
-  width: 320px; height: 320px;
+  width: 280px; height: 280px;
   background: radial-gradient(circle, rgba(114,78,145,0.09) 0%, transparent 70%);
-  top: -80px; right: -80px;
+  top: -60px; right: -60px;
 }
 .deco-2 {
-  width: 220px; height: 220px;
+  width: 180px; height: 180px;
   background: radial-gradient(circle, rgba(255,119,40,0.10) 0%, transparent 70%);
-  bottom: 20px; left: -70px;
-}
-.deco-3 {
-  width: 160px; height: 160px;
-  background: radial-gradient(circle, rgba(245,200,66,0.16) 0%, transparent 70%);
-  top: 35%; left: 3%;
+  bottom: 10px; left: -50px;
 }
 
 .landing-inner {
   position: relative; z-index: 1;
-  max-width: 460px; width: 100%;
-  animation: fadeUp 0.6s ease both;
+  max-width: 440px; width: 100%;
+  animation: fadeUp 0.5s ease both;
 }
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -136,109 +131,133 @@ body {
   background: var(--orange); color: var(--white);
   font-size: 10px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
-  padding: 5px 14px; border-radius: 20px; margin-bottom: 22px;
-  animation: fadeUp 0.6s 0.1s ease both;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
 }
 .landing-kartini-art {
-  font-size: 42px; margin-bottom: 12px; display: block;
+  font-size: 34px; margin-bottom: 8px; display: block;
   animation: floatBob 3s ease-in-out infinite;
 }
 @keyframes floatBob {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+  50%       { transform: translateY(-5px); }
 }
 .landing-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(36px, 8vw, 56px);
-  color: var(--purple-dk); line-height: 1.1; margin-bottom: 8px;
-  animation: fadeUp 0.6s 0.15s ease both;
+  font-size: clamp(30px, 7vw, 48px);
+  color: var(--purple-dk); line-height: 1.1; margin-bottom: 6px;
 }
 .landing-title em { font-style: italic; color: var(--orange); }
 .landing-date {
-  font-size: 13px; font-weight: 500;
-  color: var(--mid); letter-spacing: 1px; margin-bottom: 26px;
-  animation: fadeUp 0.6s 0.2s ease both;
+  font-size: 12px; font-weight: 500;
+  color: var(--mid); letter-spacing: 1px; margin-bottom: 14px;
 }
 .landing-sub {
-  font-size: 15px; color: var(--charcoal);
-  line-height: 1.75; margin-bottom: 34px; font-weight: 400;
-  animation: fadeUp 0.6s 0.25s ease both;
+  font-size: 13.5px; color: var(--charcoal);
+  line-height: 1.65; margin-bottom: 18px;
 }
 .rules-card {
   background: var(--white);
   border: 1.5px solid var(--taupe);
-  border-radius: 18px; padding: 24px 26px;
-  margin-bottom: 28px; text-align: left;
-  animation: fadeUp 0.6s 0.3s ease both;
+  border-radius: 16px; padding: 16px 20px;
+  margin-bottom: 18px; text-align: left;
 }
 .rules-heading {
   font-size: 10px; font-weight: 800;
   letter-spacing: 2px; text-transform: uppercase;
-  color: var(--purple); margin-bottom: 16px;
+  color: var(--purple); margin-bottom: 10px;
 }
-.rules-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.rules-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
 .rules-list li {
-  font-size: 13.5px; color: var(--charcoal);
-  line-height: 1.5; display: flex; gap: 12px; align-items: flex-start;
+  font-size: 12.5px; color: var(--charcoal);
+  line-height: 1.45; display: flex; gap: 10px; align-items: flex-start;
 }
 .rule-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--orange); margin-top: 7px; flex-shrink: 0;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--orange); margin-top: 6px; flex-shrink: 0;
 }
 .btn-start {
   background: var(--purple); color: var(--white);
   border: none; border-radius: 14px;
-  padding: 17px 52px; font-size: 15px; font-weight: 700;
+  padding: 15px 40px; font-size: 15px; font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  width: 100%; letter-spacing: 0.3px;
-  animation: fadeUp 0.6s 0.35s ease both;
+  width: 100%;
   box-shadow: 0 4px 20px rgba(114,78,145,0.3);
 }
 .btn-start:hover {
   background: var(--purple-dk);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(114,78,145,0.4);
 }
 .landing-footnote {
-  margin-top: 14px; font-size: 11.5px;
+  margin-top: 10px; font-size: 11px;
   color: var(--light); font-weight: 500;
-  animation: fadeUp 0.6s 0.4s ease both;
 }
 
-/* ═══ GAME ═════════════════════════════════════════ */
+/* ═══ GAME — FIXED LAYOUT ══════════════════════════ */
 #screen-game {
+  width: 100%; height: 100vh;
+  flex-direction: column;
   background:
     radial-gradient(ellipse at 90% 5%, rgba(114,78,145,0.07) 0%, transparent 45%),
-    linear-gradient(180deg, #f5f0fa 0%, #f7f4ef 70%);
-  padding-top: 64px; padding-bottom: 60px;
+    linear-gradient(180deg, #f5f0fa 0%, #f7f4ef 100%);
+  padding-top: var(--timer-h);
 }
-.game-inner { max-width: 660px; margin: 0 auto; padding: 24px 20px; }
+
+/* Fixed top: secret message + cipher */
+.game-top {
+  flex-shrink: 0;
+  padding: 14px 20px 0;
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(114,78,145,0.07) 0%, transparent 60%),
+    linear-gradient(180deg, #f5f0fa 0%, #f5f0fa 100%);
+  border-bottom: 1px solid var(--taupe);
+}
+.game-top-inner { max-width: 660px; margin: 0 auto; }
+
+/* Scrollable questions area */
+.game-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px;
+}
+.game-scroll-inner { max-width: 660px; margin: 0 auto; }
+
+/* Fixed bottom: reveal button */
+.game-bottom {
+  flex-shrink: 0;
+  padding: 10px 20px 14px;
+  background: rgba(247,244,239,0.96);
+  backdrop-filter: blur(6px);
+  border-top: 1.5px solid var(--taupe);
+}
+.game-bottom-inner { max-width: 660px; margin: 0 auto; }
 
 .section-label {
   font-size: 10px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
-  color: var(--light); margin-bottom: 10px;
+  color: var(--light); margin-bottom: 8px;
 }
 
 /* Secret message */
 .msg-box {
-  background: var(--purple); border-radius: 18px;
-  padding: 22px 18px; margin-bottom: 6px;
+  background: var(--purple); border-radius: 14px;
+  padding: 14px 16px; margin-bottom: 4px;
 }
 .msg-label {
   font-size: 9px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px;
+  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px;
 }
-.msg-words { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-.msg-word  { display: flex; gap: 3px; align-items: flex-end; }
-.msg-lbox  { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.msg-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.msg-word  { display: flex; gap: 2px; align-items: flex-end; }
+.msg-lbox  { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .msg-inp {
-  width: 22px; height: 27px;
+  width: 21px; height: 26px;
   background: rgba(255,255,255,0.07);
   border: none; border-bottom: 2px solid rgba(255,255,255,0.22);
   border-radius: 3px 3px 0 0; text-align: center;
-  font-size: 12px; font-weight: 700; color: var(--white);
+  font-size: 11px; font-weight: 700; color: var(--white);
   font-family: 'Plus Jakarta Sans', sans-serif;
   text-transform: uppercase; outline: none;
   caret-color: var(--yellow);
@@ -251,8 +270,11 @@ body {
   animation: popCell 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
 .msg-inp.err { border-bottom-color: #ff6b6b; color: #ff9a9a; animation: shake 0.25s; }
-.msg-code { font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.35); }
-.msg-progress { font-size: 11px; color: var(--mid); text-align: right; margin-bottom: 20px; font-weight: 500; }
+.msg-code { font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.35); }
+.msg-progress {
+  font-size: 10px; color: var(--mid);
+  text-align: right; margin-bottom: 10px; font-weight: 500;
+}
 
 @keyframes popCell {
   0%   { transform: scale(0.7); }
@@ -263,24 +285,24 @@ body {
 /* Cipher key */
 .cipher-panel {
   background: var(--white); border: 1.5px solid var(--taupe);
-  border-radius: 14px; padding: 16px 18px; margin-bottom: 22px;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
 }
 .cipher-title {
   font-size: 10px; font-weight: 700; letter-spacing: 1.8px;
-  text-transform: uppercase; color: var(--purple); margin-bottom: 12px;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 10px;
 }
-.cipher-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.cipher-grid { display: flex; flex-wrap: wrap; gap: 4px; }
 .ck-slot {
-  min-width: 34px; padding: 4px 7px;
-  border-radius: 7px; border: 1.5px solid var(--taupe);
+  min-width: 32px; padding: 3px 6px;
+  border-radius: 6px; border: 1.5px solid var(--taupe);
   background: var(--ivory); text-align: center; transition: all 0.3s;
 }
-.ck-slot .ck-num { font-size: 8px; font-weight: 700; color: var(--light); display: block; margin-bottom: 2px; }
-.ck-slot .ck-letter { font-size: 13px; font-weight: 700; color: var(--light); display: block; }
+.ck-slot .ck-num { font-size: 7px; font-weight: 700; color: var(--light); display: block; margin-bottom: 1px; }
+.ck-slot .ck-letter { font-size: 12px; font-weight: 700; color: var(--light); display: block; }
 .ck-slot.known {
   background: var(--yellow-lt); border-color: var(--yellow);
   animation: keyReveal 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 0 10px rgba(245,200,66,0.45);
+  box-shadow: 0 0 8px rgba(245,200,66,0.4);
 }
 .ck-slot.known .ck-num { color: var(--charcoal); }
 .ck-slot.known .ck-letter { color: var(--charcoal); }
@@ -291,11 +313,11 @@ body {
 }
 
 /* Questions */
-.q-area { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+.q-area { display: flex; flex-direction: column; gap: 10px; }
 .qblock {
   background: var(--white); border: 1.5px solid var(--taupe);
-  border-radius: 14px; padding: 18px 20px;
-  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+  border-radius: 14px; padding: 16px 18px;
+  transition: border-color 0.3s, background 0.3s;
 }
 .qblock.answered {
   border-color: var(--green); background: var(--green-lt);
@@ -303,22 +325,22 @@ body {
 }
 @keyframes blockSuccess {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.02); }
+  40%  { transform: scale(1.015); }
   100% { transform: scale(1); }
 }
-.q-num { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; }
+.q-num { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
 .qblock.answered .q-num { color: var(--green); }
-.q-text { font-size: 14px; line-height: 1.65; color: var(--charcoal); margin-bottom: 14px; }
+.q-text { font-size: 13.5px; line-height: 1.6; color: var(--charcoal); margin-bottom: 12px; }
 .qblock.answered .q-text { color: var(--mid); }
 
 .ans-wrap { display: flex; flex-wrap: wrap; gap: 3px; align-items: flex-end; }
 .ans-space { width: 10px; flex-shrink: 0; }
-.ans-lbox { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.ans-lbox { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ans-inp {
-  width: 22px; height: 27px; background: var(--ivory);
+  width: 21px; height: 26px; background: var(--ivory);
   border: none; border-bottom: 2px solid var(--taupe);
   border-radius: 3px 3px 0 0; text-align: center;
-  font-size: 12px; font-weight: 700; color: var(--charcoal);
+  font-size: 11px; font-weight: 700; color: var(--charcoal);
   font-family: 'Plus Jakarta Sans', sans-serif;
   text-transform: uppercase; outline: none;
   caret-color: var(--orange);
@@ -326,55 +348,56 @@ body {
 }
 .ans-inp:focus { background: var(--orange-lt); border-bottom-color: var(--orange); }
 .ans-inp.ok {
-  border-bottom-color: var(--green); color: var(--green);
-  background: var(--green-lt);
+  border-bottom-color: var(--green); color: var(--green); background: var(--green-lt);
   animation: popCell 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
 .ans-inp.err { border-bottom-color: var(--red); color: var(--red); animation: shake 0.25s; }
-.ans-num { font-size: 8px; font-weight: 600; color: var(--light); }
+.ans-num { font-size: 7px; font-weight: 600; color: var(--light); }
 .ans-prefill {
-  width: 22px; height: 27px; display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: var(--mid);
+  width: 21px; height: 26px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--mid);
   border-bottom: 2px solid var(--taupe); background: var(--ivory); border-radius: 3px 3px 0 0;
 }
-.done-badge { display: none; font-size: 12px; font-weight: 600; color: var(--green); margin-top: 6px; }
+.done-badge { display: none; font-size: 12px; font-weight: 600; color: var(--green); margin-top: 4px; }
 .qblock.answered .done-badge { display: block; }
 .qblock.answered .ans-wrap { display: none; }
 
 .btn-unlock {
-  width: 100%; padding: 16px;
+  width: 100%; padding: 14px;
   background: var(--orange); color: var(--white);
-  border: none; border-radius: 13px;
-  font-size: 15px; font-weight: 700;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.btn-unlock:disabled { background: var(--taupe); color: var(--light); cursor: not-allowed; box-shadow: none; }
+.btn-unlock:disabled { background: var(--taupe); color: var(--light); cursor: not-allowed; }
 .btn-unlock:not(:disabled) {
-  box-shadow: 0 4px 20px rgba(255,119,40,0.4);
+  box-shadow: 0 4px 18px rgba(255,119,40,0.4);
   animation: unlockPulse 1.8s ease-in-out infinite;
 }
 .btn-unlock:not(:disabled):hover {
   background: #e5621a; transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255,119,40,0.5);
+  box-shadow: 0 8px 26px rgba(255,119,40,0.5);
   animation: none;
 }
 @keyframes unlockPulse {
-  0%, 100% { box-shadow: 0 4px 20px rgba(255,119,40,0.4); }
-  50%       { box-shadow: 0 6px 30px rgba(255,119,40,0.65); }
+  0%, 100% { box-shadow: 0 4px 18px rgba(255,119,40,0.4); }
+  50%       { box-shadow: 0 6px 28px rgba(255,119,40,0.65); }
 }
 
-/* ═══ CELEBRATION ══════════════════════════════════ */
+/* ═══ CELEBRATION — FIT TO SCREEN ══════════════════ */
 #screen-finish {
+  width: 100%; height: 100vh;
+  overflow-y: auto;
   background:
     radial-gradient(ellipse at 25% 15%, rgba(255,119,40,0.28) 0%, transparent 50%),
     radial-gradient(ellipse at 75% 85%, rgba(245,200,66,0.22) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 10%, rgba(255,255,255,0.12) 0%, transparent 40%),
     linear-gradient(145deg, #4e3063 0%, #724e91 45%, #5a3d78 100%);
   flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 60px 24px; text-align: center;
-  position: relative; overflow: hidden;
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
 }
 
 .confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -388,12 +411,12 @@ body {
 }
 
 .finish-inner {
-  position: relative; z-index: 2; max-width: 480px; width: 100%;
+  position: relative; z-index: 2; max-width: 460px; width: 100%;
   animation: fadeUp 0.5s ease both;
 }
 
 .finish-emoji {
-  font-size: 56px; margin-bottom: 14px; display: block;
+  font-size: 48px; margin-bottom: 10px; display: block;
   animation: popIn 0.55s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes popIn {
@@ -401,13 +424,12 @@ body {
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-/* Stars floating around finish emoji */
 .star-ring {
-  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-  width: 100px; height: 80px; pointer-events: none;
+  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 70px; pointer-events: none;
 }
 .star-ring span {
-  position: absolute; font-size: 14px;
+  position: absolute; font-size: 12px;
   animation: orbitStar 3s ease-in-out infinite;
 }
 .star-ring span:nth-child(1) { left: 0;   animation-delay: 0s; }
@@ -415,7 +437,7 @@ body {
 .star-ring span:nth-child(3) { left: 40%; animation-delay: 1.2s; }
 @keyframes orbitStar {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
-  50%       { transform: translateY(-12px) scale(1.3); opacity: 1; }
+  50%       { transform: translateY(-10px) scale(1.3); opacity: 1; }
 }
 
 .finish-tag {
@@ -423,32 +445,31 @@ body {
   background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9);
   font-size: 10px; font-weight: 700;
   letter-spacing: 2.5px; text-transform: uppercase;
-  padding: 5px 16px; border-radius: 20px; margin-bottom: 18px;
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
   border: 1px solid rgba(255,255,255,0.28);
 }
 .finish-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(26px, 6vw, 40px);
-  color: var(--white); line-height: 1.2; margin-bottom: 24px;
+  font-size: clamp(22px, 5.5vw, 36px);
+  color: var(--white); line-height: 1.2; margin-bottom: 18px;
 }
 .finish-msg-box {
   background: rgba(255,255,255,0.11);
   border: 1.5px solid rgba(255,255,255,0.22);
-  border-radius: 16px; padding: 20px 24px; margin-bottom: 28px;
+  border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;
 }
 .finish-msg-label {
   font-size: 9px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px;
+  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 8px;
 }
 .finish-msg-text {
   font-family: 'Fraunces', serif;
-  font-size: clamp(15px, 3.5vw, 20px);
+  font-size: clamp(14px, 3.2vw, 18px);
   color: var(--yellow); letter-spacing: 1.5px; line-height: 1.5;
   font-style: italic;
 }
 .finish-time {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 54px; font-weight: 800;
+  font-size: clamp(44px, 10vw, 60px); font-weight: 800;
   color: var(--white); letter-spacing: 4px;
   animation: popIn 0.5s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
 }
@@ -456,20 +477,29 @@ body {
   font-size: 11px; font-weight: 600;
   letter-spacing: 2px; text-transform: uppercase;
   color: rgba(255,255,255,0.45);
-  margin-bottom: 28px; display: block; margin-top: 4px;
+  margin-bottom: 20px; display: block; margin-top: 3px;
 }
 .finish-sub {
-  font-size: 14px; color: rgba(255,255,255,0.72);
-  line-height: 1.75; margin-bottom: 32px;
+  font-size: 13px; color: rgba(255,255,255,0.72);
+  line-height: 1.75; margin-bottom: 24px;
 }
 .finish-sub strong { color: var(--white); }
+.finish-ig {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px; padding: 4px 12px;
+  font-size: 12px; font-weight: 700;
+  color: var(--white); letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
 .btn-retry {
   background: rgba(255,255,255,0.14); color: var(--white);
   border: 1.5px solid rgba(255,255,255,0.35);
-  border-radius: 12px; padding: 14px 36px;
+  border-radius: 12px; padding: 13px 32px;
   font-size: 14px; font-weight: 600;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  cursor: pointer; transition: all 0.2s;
+  cursor: pointer; transition: all 0.2s; width: 100%;
 }
 .btn-retry:hover { background: rgba(255,255,255,0.24); }
 
@@ -478,11 +508,6 @@ body {
   0%,100% { transform: translateX(0); }
   30%      { transform: translateX(-4px); }
   70%      { transform: translateX(4px); }
-}
-@media (max-width: 480px) {
-  #timer-bar { padding: 10px 16px; }
-  .game-inner { padding: 18px 14px; }
-  .msg-inp, .ans-inp { width: 19px; height: 24px; font-size: 11px; }
 }
 </style>
 </head>
@@ -499,21 +524,18 @@ body {
   <div class="sakura-wrap" id="sakuraWrap"></div>
   <div class="deco deco-1"></div>
   <div class="deco deco-2"></div>
-  <div class="deco deco-3"></div>
   <div class="landing-inner">
     <span class="landing-tag">Hari Kartini 2026</span>
     <span class="landing-kartini-art">🌸</span>
     <h1 class="landing-title">Cryptogram<br><em>Challenge</em></h1>
     <p class="landing-date">by CMON · Creative Mom Networks</p>
-    <p class="landing-sub">
-      Jawab pertanyaan, ungkap cipher key,<br>dan decode secret message. Siapa paling cepat — menang. 🌸
-    </p>
+    <p class="landing-sub">Jawab pertanyaan, ungkap cipher key, dan decode secret message. Siapa paling cepat — menang. 🌸</p>
     <div class="rules-card">
       <p class="rules-heading">Cara Main</p>
       <ul class="rules-list">
         <li><span class="rule-dot"></span><span>Kamu akan dapat satu paket soal secara acak</span></li>
         <li><span class="rule-dot"></span><span>Jawab tiap soal — huruf jawabanmu membuka cipher key</span></li>
-        <li><span class="rule-dot"></span><span>Gunakan cipher key untuk decode secret message, satu huruf per satu</span></li>
+        <li><span class="rule-dot"></span><span>Gunakan cipher key untuk decode secret message</span></li>
         <li><span class="rule-dot"></span><span>Timer mulai saat kamu klik tombol di bawah</span></li>
         <li><span class="rule-dot"></span><span>Screenshot waktumu saat selesai — tercepat menang!</span></li>
       </ul>
@@ -525,38 +547,53 @@ body {
 
 <!-- ══ GAME ══════════════════════════════════════════ -->
 <div class="screen" id="screen-game">
-  <div class="game-inner">
-    <p class="section-label">Secret Message</p>
-    <div class="msg-box">
-      <p class="msg-label">Decode & ketik huruf satu per satu</p>
-      <div class="msg-words" id="msgWords"></div>
+
+  <!-- Fixed top -->
+  <div class="game-top">
+    <div class="game-top-inner">
+      <p class="section-label">Secret Message</p>
+      <div class="msg-box">
+        <p class="msg-label">Decode & ketik huruf satu per satu</p>
+        <div class="msg-words" id="msgWords"></div>
+      </div>
+      <p class="msg-progress" id="msgProgress">0 / 0 huruf terisi</p>
+      <div class="cipher-panel">
+        <p class="cipher-title">🗝 Cipher Key</p>
+        <div class="cipher-grid" id="cipherGrid"></div>
+      </div>
     </div>
-    <p class="msg-progress" id="msgProgress">0 / 0 huruf terisi</p>
-
-    <div class="cipher-panel">
-      <p class="cipher-title">🗝 Cipher Key</p>
-      <div class="cipher-grid" id="cipherGrid"></div>
-    </div>
-
-    <p class="section-label">Pertanyaan</p>
-    <div class="q-area" id="qArea"></div>
-
-    <button class="btn-unlock" id="btnUnlock" disabled onclick="showFinish()">
-      🎉 Reveal Secret Message!
-    </button>
   </div>
+
+  <!-- Scrollable questions -->
+  <div class="game-scroll">
+    <div class="game-scroll-inner">
+      <p class="section-label">Pertanyaan</p>
+      <div class="q-area" id="qArea"></div>
+    </div>
+  </div>
+
+  <!-- Fixed bottom button -->
+  <div class="game-bottom">
+    <div class="game-bottom-inner">
+      <button class="btn-unlock" id="btnUnlock" disabled onclick="showFinish()">
+        🎉 Reveal Secret Message!
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══ CELEBRATION ═══════════════════════════════════ -->
 <div class="screen" id="screen-finish">
   <div class="confetti-wrap" id="confettiWrap"></div>
   <div class="finish-inner">
-    <div style="position:relative; display:inline-block; margin-bottom:14px;">
+    <div style="position:relative; display:inline-block; margin-bottom:10px;">
       <span class="finish-emoji">🌸</span>
       <div class="star-ring">
         <span>✨</span><span>⭐</span><span>✨</span>
       </div>
     </div>
+    <br>
     <span class="finish-tag">Selesai!</span>
     <h2 class="finish-title">Secret Message<br>Terpecahkan!</h2>
     <div class="finish-msg-box">
@@ -567,9 +604,12 @@ body {
     <span class="finish-time-label">Waktu kamu</span>
     <p class="finish-sub">
       Screenshot halaman ini dan kirim ke grup CMON.<br>
-      <strong>Yang paling cepat menang! 🏆</strong>
+      Tag juga Instagram kita ya! <strong class="finish-ig">@cmon.rise</strong>
     </p>
-    <button class="btn-retry" onclick="resetGame()">Coba Paket Lain →</button>
+    <p class="finish-sub" style="margin-top:-14px; margin-bottom:20px; font-size:12px;">
+      Yang paling cepat menang! 🏆
+    </p>
+    <button class="btn-retry" onclick="resetGame()">Cobain lagi, yuk! →</button>
   </div>
 </div>
 
@@ -590,20 +630,16 @@ let revealedKeys=new Set(), answeredQ=new Set();
 function formatTime(s){
   return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 }
-
 function startTimer(){
   const el=document.getElementById('timer-display');
   el.className='running';
   timerInterval=setInterval(()=>{ seconds++; el.textContent=formatTime(seconds); },1000);
 }
-
 function stopTimer(){
   clearInterval(timerInterval);
-  const el=document.getElementById('timer-display');
-  el.className='done';
+  document.getElementById('timer-display').className='done';
 }
 
-// Spawn sakura petals on landing
 function spawnSakura(){
   const wrap=document.getElementById('sakuraWrap');
   wrap.innerHTML='';
@@ -612,12 +648,7 @@ function spawnSakura(){
     const p=document.createElement('div');
     p.className='petal';
     p.textContent=petals[Math.floor(Math.random()*petals.length)];
-    p.style.cssText=`
-      left:${5+Math.random()*90}%;
-      font-size:${12+Math.random()*16}px;
-      animation-duration:${7+Math.random()*8}s;
-      animation-delay:${Math.random()*6}s;
-    `;
+    p.style.cssText=`left:${5+Math.random()*90}%;font-size:${12+Math.random()*16}px;animation-duration:${7+Math.random()*8}s;animation-delay:${Math.random()*6}s;`;
     wrap.appendChild(p);
   }
 }
@@ -771,13 +802,14 @@ function checkQComplete(qIdx){
   const boxes=Array.from(document.querySelectorAll(`.ans-inp[data-qidx="${qIdx}"]`));
   if(!boxes.length||!boxes.every(b=>b.value.toUpperCase()===b.dataset.answer))return;
   answeredQ.add(qIdx);
-  const block=document.getElementById(`qb-${qIdx}`);
-  block.classList.add('answered');
+  document.getElementById(`qb-${qIdx}`).classList.add('answered');
   boxes.forEach(b=>b.disabled=true);
 }
 
 function showFinish(){
   stopTimer();
+  // Hide timer bar on finish screen
+  document.getElementById('timer-bar').classList.remove('visible');
   document.getElementById('finishMsg').textContent='✨ '+currentPacket.message+' ✨';
   document.getElementById('finishTime').textContent=formatTime(seconds);
   spawnConfetti();
@@ -790,15 +822,7 @@ function spawnConfetti(){
   for(let i=0;i<60;i++){
     const dot=document.createElement('div'); dot.className='confetti-dot';
     const size=6+Math.random()*14;
-    dot.style.cssText=`
-      width:${size}px;height:${size}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      left:${Math.random()*100}%;
-      bottom:-${size}px;
-      animation-duration:${3+Math.random()*5}s;
-      animation-delay:${Math.random()*2.5}s;
-      border-radius:${Math.random()>0.5?'50%':'4px'};
-    `;
+    dot.style.cssText=`width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}%;bottom:-${size}px;animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*2.5}s;border-radius:${Math.random()>0.5?'50%':'4px'};`;
     wrap.appendChild(dot);
   }
 }
@@ -807,7 +831,6 @@ function resetGame(){
   stopTimer(); seconds=0;
   document.getElementById('timer-display').textContent='00:00';
   document.getElementById('timer-display').className='';
-  document.getElementById('timer-bar').classList.remove('visible');
   spawnSakura();
   showScreen('screen-landing');
 }
@@ -818,7 +841,6 @@ function showScreen(id){
   window.scrollTo(0,0);
 }
 
-// Init sakura on load
 window.addEventListener('load', spawnSakura);
 </script>
 </body>
