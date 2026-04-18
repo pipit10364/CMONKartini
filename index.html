@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMON × Kartini — Cryptogram Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --purple:    #724e91;
+  --purple-dk: #4e3063;
+  --purple-lt: #f0eaf6;
+  --purple-md: #d9cce8;
+  --orange:    #ff7728;
+  --orange-lt: #fff0e8;
+  --yellow:    #f5c842;
+  --yellow-lt: #fffbea;
+  --ivory:     #f7f4ef;
+  --taupe:     #e2dbd0;
+  --charcoal:  #2f2f2f;
+  --mid:       #6b6b6b;
+  --light:     #b0a8a0;
+  --white:     #ffffff;
+  --green:     #3a9e6f;
+  --green-lt:  #e8f6ef;
+  --red:       #d94f4f;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ═══ TIMER BAR ════════════════════════════════════ */
+#timer-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.93);
+  backdrop-filter: blur(8px);
+  border-bottom: 1.5px solid var(--taupe);
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 24px;
+}
+#timer-bar.visible { display: flex; }
+.brand-mark {
+  font-family: 'Fraunces', serif;
+  font-size: 15px; color: var(--purple); font-style: italic;
+}
+#timer-display {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--charcoal); letter-spacing: 2px;
+}
+#timer-display.running { color: var(--purple); }
+#timer-display.done    { color: var(--green); }
+.packet-badge {
+  font-size: 11px; font-weight: 600;
+  color: var(--mid); letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* ═══ LANDING ══════════════════════════════════════ */
+#screen-landing {
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(114,78,145,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(255,119,40,0.11) 0%, transparent 50%),
+    radial-gradient(ellipse at 55% 85%, rgba(245,200,66,0.13) 0%, transparent 50%),
+    linear-gradient(155deg, #faf7f2 0%, #f3ede6 45%, #ede5f5 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  position: relative;
+}
+#screen-landing.active { display: flex; }
+
+.deco {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+.deco-1 {
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(114,78,145,0.09) 0%, transparent 70%);
+  top: -80px; right: -80px;
+}
+.deco-2 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(255,119,40,0.10) 0%, transparent 70%);
+  bottom: 20px; left: -70px;
+}
+.deco-3 {
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(245,200,66,0.16) 0%, transparent 70%);
+  top: 35%; left: 3%;
+}
+
+.landing-inner {
+  position: relative; z-index: 1;
+  max-width: 460px; width: 100%;
+}
+.landing-tag {
+  display: inline-block;
+  background: var(--orange); color: var(--white);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px; margin-bottom: 22px;
+}
+.landing-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 8vw, 56px);
+  color: var(--purple-dk); line-height: 1.1; margin-bottom: 8px;
+}
+.landing-title em { font-style: italic; color: var(--orange); }
+.landing-date {
+  font-size: 13px; font-weight: 500;
+  color: var(--mid); letter-spacing: 1px; margin-bottom: 26px;
+}
+.landing-sub {
+  font-size: 15px; color: var(--charcoal);
+  line-height: 1.75; margin-bottom: 34px; font-weight: 400;
+}
+.rules-card {
+  background: var(--white);
+  border: 1.5px solid var(--taupe);
+  border-radius: 18px; padding: 24px 26px;
+  margin-bottom: 28px; text-align: left;
+}
+.rules-heading {
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--purple); margin-bottom: 16px;
+}
+.rules-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.rules-list li {
+  font-size: 13.5px; color: var(--charcoal);
+  line-height: 1.5; display: flex; gap: 12px; align-items: flex-start;
+}
+.rule-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange); margin-top: 7px; flex-shrink: 0;
+}
+.btn-start {
+  background: var(--purple); color: var(--white);
+  border: none; border-radius: 14px;
+  padding: 17px 52px; font-size: 15px; font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+  width: 100%; letter-spacing: 0.3px;
+}
+.btn-start:hover { background: var(--purple-dk); transform: translateY(-2px); }
+.landing-footnote {
+  margin-top: 14px; font-size: 11.5px;
+  color: var(--light); font-weight: 500;
+}
+
+/* ═══ GAME ═════════════════════════════════════════ */
+#screen-game {
+  background:
+    radial-gradient(ellipse at 90% 5%, rgba(114,78,145,0.07) 0%, transparent 45%),
+    linear-gradient(180deg, #f5f0fa 0%, #f7f4ef 70%);
+  padding-top: 64px; padding-bottom: 60px;
+}
+.game-inner { max-width: 660px; margin: 0 auto; padding: 24px 20px; }
+
+.section-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--light); margin-bottom: 10px;
+}
+
+/* Secret message */
+.msg-box {
+  background: var(--purple); border-radius: 18px;
+  padding: 22px 18px; margin-bottom: 6px;
+}
+.msg-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px;
+}
+.msg-words { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.msg-word  { display: flex; gap: 3px; align-items: flex-end; }
+.msg-lbox  { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.msg-inp {
+  width: 22px; height: 27px;
+  background: rgba(255,255,255,0.07);
+  border: none; border-bottom: 2px solid rgba(255,255,255,0.22);
+  border-radius: 3px 3px 0 0; text-align: center;
+  font-size: 12px; font-weight: 700; color: var(--white);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase; outline: none;
+  caret-color: var(--yellow);
+  transition: background 0.15s, border-color 0.15s;
+}
+.msg-inp:focus { background: rgba(255,255,255,0.14); border-bottom-color: var(--yellow); }
+.msg-inp.ok { border-bottom-color: var(--yellow); color: var(--yellow); background: rgba(245,200,66,0.13); }
+.msg-inp.err { border-bottom-color: #ff6b6b; color: #ff9a9a; animation: shake 0.25s; }
+.msg-code { font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.35); }
+.msg-progress { font-size: 11px; color: var(--mid); text-align: right; margin-bottom: 20px; font-weight: 500; }
+
+/* Cipher key */
+.cipher-panel {
+  background: var(--white); border: 1.5px solid var(--taupe);
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 22px;
+}
+.cipher-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 12px;
+}
+.cipher-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.ck-slot {
+  min-width: 34px; padding: 4px 7px;
+  border-radius: 7px; border: 1.5px solid var(--taupe);
+  background: var(--ivory); text-align: center; transition: all 0.22s;
+}
+.ck-slot .ck-num { font-size: 8px; font-weight: 700; color: var(--light); display: block; margin-bottom: 2px; }
+.ck-slot .ck-letter { font-size: 13px; font-weight: 700; color: var(--light); display: block; }
+.ck-slot.known { background: var(--yellow-lt); border-color: var(--yellow); }
+.ck-slot.known .ck-num { color: var(--charcoal); }
+.ck-slot.known .ck-letter { color: var(--charcoal); }
+
+/* Questions */
+.q-area { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+.qblock {
+  background: var(--white); border: 1.5px solid var(--taupe);
+  border-radius: 14px; padding: 18px 20px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.qblock.answered { border-color: var(--green); background: var(--green-lt); }
+.q-num { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; }
+.qblock.answered .q-num { color: var(--green); }
+.q-text { font-size: 14px; line-height: 1.65; color: var(--charcoal); margin-bottom: 14px; }
+.qblock.answered .q-text { color: var(--mid); }
+
+.ans-wrap { display: flex; flex-wrap: wrap; gap: 3px; align-items: flex-end; }
+.ans-space { width: 10px; flex-shrink: 0; }
+.ans-lbox { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.ans-inp {
+  width: 22px; height: 27px; background: var(--ivory);
+  border: none; border-bottom: 2px solid var(--taupe);
+  border-radius: 3px 3px 0 0; text-align: center;
+  font-size: 12px; font-weight: 700; color: var(--charcoal);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase; outline: none;
+  caret-color: var(--orange);
+  transition: background 0.15s, border-color 0.15s;
+}
+.ans-inp:focus { background: var(--orange-lt); border-bottom-color: var(--orange); }
+.ans-inp.ok { border-bottom-color: var(--green); color: var(--green); background: var(--green-lt); }
+.ans-inp.err { border-bottom-color: var(--red); color: var(--red); animation: shake 0.25s; }
+.ans-num { font-size: 8px; font-weight: 600; color: var(--light); }
+.ans-prefill {
+  width: 22px; height: 27px; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--mid);
+  border-bottom: 2px solid var(--taupe); background: var(--ivory); border-radius: 3px 3px 0 0;
+}
+.done-badge { display: none; font-size: 12px; font-weight: 600; color: var(--green); margin-top: 6px; }
+.qblock.answered .done-badge { display: block; }
+.qblock.answered .ans-wrap { display: none; }
+
+.btn-unlock {
+  width: 100%; padding: 16px;
+  background: var(--orange); color: var(--white);
+  border: none; border-radius: 13px;
+  font-size: 15px; font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-unlock:disabled { background: var(--taupe); color: var(--light); cursor: not-allowed; }
+.btn-unlock:not(:disabled):hover { background: #e5621a; transform: translateY(-2px); }
+
+/* ═══ CELEBRATION ══════════════════════════════════ */
+#screen-finish {
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(255,119,40,0.28) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 85%, rgba(245,200,66,0.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 10%, rgba(255,255,255,0.12) 0%, transparent 40%),
+    linear-gradient(145deg, #4e3063 0%, #724e91 45%, #5a3d78 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 24px; text-align: center; position: relative; overflow: hidden;
+}
+#screen-finish.active { display: flex; }
+
+.confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.confetti-dot {
+  position: absolute; border-radius: 50%; opacity: 0.6;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+  100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
+}
+
+.finish-inner { position: relative; z-index: 2; max-width: 480px; width: 100%; }
+
+.finish-emoji {
+  font-size: 56px; margin-bottom: 14px; display: block;
+  animation: popIn 0.55s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn {
+  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.finish-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 5px 16px; border-radius: 20px; margin-bottom: 18px;
+  border: 1px solid rgba(255,255,255,0.28);
+}
+.finish-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(26px, 6vw, 40px);
+  color: var(--white); line-height: 1.2; margin-bottom: 24px;
+}
+.finish-msg-box {
+  background: rgba(255,255,255,0.11);
+  border: 1.5px solid rgba(255,255,255,0.22);
+  border-radius: 16px; padding: 20px 24px; margin-bottom: 28px;
+}
+.finish-msg-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px;
+}
+.finish-msg-text {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(15px, 3.5vw, 20px);
+  color: var(--yellow); letter-spacing: 1.5px; line-height: 1.5;
+  font-style: italic;
+}
+.finish-time {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 54px; font-weight: 800;
+  color: var(--white); letter-spacing: 4px;
+}
+.finish-time-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 28px; display: block; margin-top: 4px;
+}
+.finish-sub {
+  font-size: 14px; color: rgba(255,255,255,0.72);
+  line-height: 1.75; margin-bottom: 32px;
+}
+.finish-sub strong { color: var(--white); }
+.btn-retry {
+  background: rgba(255,255,255,0.14); color: var(--white);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 12px; padding: 14px 36px;
+  font-size: 14px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-retry:hover { background: rgba(255,255,255,0.24); }
+
+/* ═══ UTILS ════════════════════════════════════════ */
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  30%      { transform: translateX(-4px); }
+  70%      { transform: translateX(4px); }
+}
+@media (max-width: 480px) {
+  #timer-bar { padding: 10px 16px; }
+  .game-inner { padding: 18px 14px; }
+  .msg-inp, .ans-inp { width: 19px; height: 24px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TIMER BAR -->
+<div id="timer-bar">
+  <span class="brand-mark">CMON × Kartini</span>
+  <span id="timer-display">00:00</span>
+  <span class="packet-badge" id="packet-label">—</span>
+</div>
+
+<!-- ══ LANDING ══════════════════════════════════════ -->
+<div class="screen active" id="screen-landing">
+  <div class="deco deco-1"></div>
+  <div class="deco deco-2"></div>
+  <div class="deco deco-3"></div>
+  <div class="landing-inner">
+    <span class="landing-tag">Hari Kartini 2026</span>
+    <h1 class="landing-title">Cryptogram<br><em>Challenge</em></h1>
+    <p class="landing-date">by CMON · Creative Mom Networks</p>
+    <p class="landing-sub">
+      Jawab pertanyaan, ungkap cipher key,<br>dan decode secret message. Siapa paling cepat — menang. 🌸
+    </p>
+    <div class="rules-card">
+      <p class="rules-heading">Cara Main</p>
+      <ul class="rules-list">
+        <li><span class="rule-dot"></span><span>Kamu akan dapat satu paket soal secara acak</span></li>
+        <li><span class="rule-dot"></span><span>Jawab tiap soal — huruf jawabanmu membuka cipher key</span></li>
+        <li><span class="rule-dot"></span><span>Gunakan cipher key untuk decode secret message, satu huruf per satu</span></li>
+        <li><span class="rule-dot"></span><span>Timer mulai saat kamu klik tombol di bawah</span></li>
+        <li><span class="rule-dot"></span><span>Screenshot waktumu saat selesai — tercepat menang!</span></li>
+      </ul>
+    </div>
+    <button class="btn-start" onclick="startGame()">Mulai Sekarang →</button>
+    <p class="landing-footnote">Timer belum berjalan — klik tombol untuk mulai ⏱</p>
+  </div>
+</div>
+
+<!-- ══ GAME ══════════════════════════════════════════ -->
+<div class="screen" id="screen-game">
+  <div class="game-inner">
+    <p class="section-label">Secret Message</p>
+    <div class="msg-box">
+      <p class="msg-label">Decode & ketik huruf satu per satu</p>
+      <div class="msg-words" id="msgWords"></div>
+    </div>
+    <p class="msg-progress" id="msgProgress">0 / 0 huruf terisi</p>
+
+    <div class="cipher-panel">
+      <p class="cipher-title">🗝 Cipher Key</p>
+      <div class="cipher-grid" id="cipherGrid"></div>
+    </div>
+
+    <p class="section-label">Pertanyaan</p>
+    <div class="q-area" id="qArea"></div>
+
+    <button class="btn-unlock" id="btnUnlock" disabled onclick="showFinish()">
+      🎉 Reveal Secret Message!
+    </button>
+  </div>
+</div>
+
+<!-- ══ CELEBRATION ═══════════════════════════════════ -->
+<div class="screen" id="screen-finish">
+  <div class="confetti-wrap" id="confettiWrap"></div>
+  <div class="finish-inner">
+    <span class="finish-emoji">🌸</span>
+    <span class="finish-tag">Selesai!</span>
+    <h2 class="finish-title">Secret Message<br>Terpecahkan!</h2>
+    <div class="finish-msg-box">
+      <p class="finish-msg-label">Secret Message</p>
+      <p class="finish-msg-text" id="finishMsg"></p>
+    </div>
+    <div class="finish-time" id="finishTime">00:00</div>
+    <span class="finish-time-label">Waktu kamu</span>
+    <p class="finish-sub">
+      Screenshot halaman ini dan kirim ke grup CMON.<br>
+      <strong>Yang paling cepat menang! 🏆</strong>
+    </p>
+    <button class="btn-retry" onclick="resetGame()">Coba Paket Lain →</button>
+  </div>
+</div>
+
+<script>
+const PACKETS = [
+  {id:1,message:"BRAVE WOMEN BUILD THE FUTURE",cipher:{1:'B',2:'R',3:'A',4:'V',5:'E',6:'W',7:'O',8:'M',9:'N',10:'U',11:'I',12:'L',13:'D',14:'T',15:'H',16:'F'},questions:[{q:"She's Justin Bieber's wife, and she built her own beauty brand called Rhode.",answer:"HAILEY"},{q:"A digital platform that has helped over 70,000 Indonesian mothers find their first digital job.",answer:"IBU PUNYA MIMPI"},{q:"Byun Woo Seok played a K-pop idol who got saved by his biggest fan — who traveled back in time for him. Name this 2024 drakor!",answer:"LOVELY RUNNER"},{q:'Before "Ibu Kartini", she had a formal noble title. What were her first two words of that title?',answer:"RADEN AJENG"},{q:"The FH UI harassment case that went viral in April 2026 involved what type of sexual harassment — done through a private group chat?",answer:"VERBAL"},{q:"A content creator who focuses on producing written content — articles, captions, copywriting — is called a…?",answer:"WRITER"},{q:"A freelance platform popular in Indonesia where clients can find creative and digital workers.",answer:"FASTWORK"}]},
+  {id:2,message:"SHE DARES TO LEAD AND CREATES CHANGE",cipher:{1:'S',2:'H',3:'E',4:'D',5:'A',6:'R',7:'T',8:'O',9:'L',10:'N',11:'C',12:'G'},questions:[{q:'A women\'s learning center founded by Susi Sukaesih, with the tagline "Sehat, Cerdas, dan Berdaya." They\'ve trained over 2,000 Ibu Penggerak across Indonesia.',answer:"SIDINA COMMUNITY"},{q:"The AI assistant made by Anthropic — the one you might be using right now to build cool things.",answer:"CLAUDE AI"},{q:"An 8-member K-pop girl group with an Indonesian member named Carmen.",answer:"H2H"},{q:"One of the world's biggest freelance platforms where Indonesian digital creatives find international clients.",answer:"UPWORK"},{q:"RA Kartini passed away at just 25 years old — four days after giving birth to her son. In which month did she die?",answer:"SEPTEMBER"},{q:"Google's cloud storage tool, widely used by remote workers and digital creatives to store and share files.",answer:"GDRIVE"},{q:"He starred in Boys Over Flowers, The Heirs, and Legend of the Blue Sea. One of the most iconic Korean actors of his generation.",answer:"LEE MIN HO"}]},
+  {id:3,message:"BORN TO CREATE BUILT TO INSPIRE",cipher:{1:'B',2:'O',3:'R',4:'N',5:'T',6:'C',7:'E',8:'A',9:'I',10:'U',11:'L',12:'S',13:'P'},questions:[{q:"She headlined Coachella 2026 with a full theatrical show that got everyone talking — and made people compare her to a certain male artist who performed way more low-key.",answer:"SABRINA"},{q:"In the digital creative world, anything you produce — videos, captions, articles, reels — falls under this one umbrella word.",answer:"CONTENT"},{q:"Instagram's short-form video feature, heavily used by creators and brands to reach wider audiences.",answer:"REELS"},{q:"RA Kartini was born and spent most of her life in this coastal city in Central Java.",answer:"JEPARA"},{q:"A free video editing app, very popular among Indonesian content creators for making reels and short videos. Made by the same company as TikTok.",answer:"CAPCUT"},{q:"An Indonesian woman who debuted as a K-pop idol — she's a member of Secret Number.",answer:"DITA"}]},
+  {id:4,message:"DREAM BIG CREATE BOLD LIVE FREE",cipher:{1:'D',2:'R',3:'E',4:'A',5:'M',6:'B',7:'I',8:'G',9:'C',10:'T',11:'O',12:'L',13:'V',14:'F'},questions:[{q:"The short-form video platform that changed the content creation game — and also got banned (temporarily) in the US earlier this year.",answer:"TIKTOK"},{q:'An Indonesian woman who studied at KAIST in South Korea and wrote a book called "Kimchi Confession" about her experiences there.',answer:"XAVIERA"},{q:"A free design tool loved by digital creatives and small business owners for making everything from social media posts to presentations.",answer:"CANVA"},{q:"Someone who works independently, takes on multiple clients, and isn't tied to one employer. What do you call this type of worker?",answer:"FREELANCER"},{q:"One of the most legendary K-pop boy groups of all time, known for hits like Fantastic Baby and Bang Bang Bang. Their name is also a cosmological theory.",answer:"BIGBANG"},{q:"When building a portfolio from scratch with no real clients yet, digital creatives often make this type of self-initiated, fictional project to showcase their skills.",answer:"DUMMY PROJECT"}]},
+  {id:5,message:"KARTINI LIVES IN EVERY BRAVE WOMAN",cipher:{1:'K',2:'A',3:'R',4:'T',5:'I',6:'N',7:'L',8:'V',9:'E',10:'S',11:'B',12:'Y',13:'W',14:'O',15:'M'},questions:[{q:"A Korean drama about a team that takes revenge on behalf of victims who couldn't get justice through the legal system. The team operates under the cover of a taxi company.",answer:"TAXI DRIVER"},{q:"A creative professional who communicates ideas visually — through logos, layouts, typography, and color.",answer:"GRAPHIC DESIGNER"},{q:"The professional social media platform where you showcase your portfolio, connect with clients, and look for job opportunities.",answer:"LINKEDIN"},{q:"An education method focused on child-led learning, independence, and hands-on activities.",answer:"MONTESSORI"},{q:"He headlined Coachella 2026 with a stripped-back, nostalgic performance — sitting down, opening his laptop, and singing along to his old YouTube videos from when he was a teenager.",answer:"JUSTIN BIEBER"},{q:"A freelance platform popular in Indonesia where clients can find creative and digital workers.",answer:"FASTWORK"},{q:"She played Im Sol in Lovely Runner — a devoted fan who travels back in time to save her idol.",answer:"KIM HYE YOON"}]},
+  {id:6,message:"RISE UP SHINE BRIGHT LEAD THE WAY",cipher:{1:'R',2:'I',3:'S',4:'E',5:'U',6:'P',7:'H',8:'N',9:'B',10:'G',11:'T',12:'L',13:'A',14:'D',15:'W',16:'Y'},questions:[{q:"The space where modern creatives work, create, and earn — from content to design to marketing. Everything is online, everything is this one word.",answer:"DIGITAL"},{q:"A skincare essential that protects your skin from UV rays.",answer:"SUNSCREEN"},{q:"A visual discovery platform where creatives save inspiration for mood boards, design references, and aesthetic ideas.",answer:"PINTEREST"},{q:"The boy who lived. A fictional character who discovered he was a wizard and went to Hogwarts School of Witchcraft and Wizardry.",answer:"HARRY POTTER"},{q:"He played a K-pop idol named Ryu Sun Jae in Lovely Runner — and became one of the biggest breakout stars of 2024.",answer:"BYUN WOO SEOK"},{q:"An Indonesian singer, songwriter, and activist who graduated from the Royal Academy of Music in London. Known for the iconic song Doo Bi Doo.",answer:"GITA GUTAWA"}]},
+  {id:7,message:"WOMEN WHO DARE CHANGE THE WORLD",cipher:{1:'W',2:'O',3:'M',4:'E',5:'N',6:'H',7:'D',8:'A',9:'R',10:'C',11:'G',12:'T',13:'L'},questions:[{q:"A focused learning session where participants gain hands-on skills on a specific topic — very common in creative and mom communities.",answer:"WORKSHOP"},{q:"A group of people with shared interests, values, or goals who support and grow together. The heart of everything CMON stands for.",answer:"COMMUNITY"},{q:"Meta's text-based social media platform launched in 2023 as an alternative to X (formerly Twitter).",answer:"THREADS"},{q:'A community-based empowerment and creative agency for mothers, with the motto "From Community to Opportunity."',answer:"MAMAKOLOGI"},{q:"The connections you build professionally — clients, collaborators, fellow creatives. In the digital world, this is one of your most valuable assets.",answer:"NETWORK"},{q:"Indonesia's first female Minister of Foreign Affairs, who later became a UN Special Envoy. A true trailblazer for women in diplomacy.",answer:"RETNO MARSUDI"}]},
+];
+
+let timerInterval=null, seconds=0, currentPacket=null;
+let revealedKeys=new Set(), answeredQ=new Set();
+
+function formatTime(s){
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+
+function startTimer(){
+  const el=document.getElementById('timer-display');
+  el.className='running';
+  timerInterval=setInterval(()=>{ seconds++; el.textContent=formatTime(seconds); },1000);
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);
+  const el=document.getElementById('timer-display');
+  el.className='done';
+}
+
+function startGame(){
+  seconds=0; clearInterval(timerInterval);
+  revealedKeys=new Set(); answeredQ=new Set();
+  currentPacket=PACKETS[Math.floor(Math.random()*PACKETS.length)];
+  document.getElementById('packet-label').textContent=`Paket ${currentPacket.id}`;
+  document.getElementById('timer-display').textContent='00:00';
+  document.getElementById('timer-display').className='';
+  document.getElementById('timer-bar').classList.add('visible');
+  buildSecretMessage(); buildCipherGrid(); buildQuestions();
+  document.getElementById('btnUnlock').disabled=true;
+  showScreen('screen-game');
+  startTimer();
+}
+
+function getCode(letter){
+  return Object.entries(currentPacket.cipher).find(([,l])=>l===letter)?.[0]||'?';
+}
+
+function buildSecretMessage(){
+  const c=document.getElementById('msgWords'); c.innerHTML='';
+  const total=currentPacket.message.replace(/ /g,'').length;
+  document.getElementById('msgProgress').textContent=`0 / ${total} huruf terisi`;
+  currentPacket.message.split(' ').forEach(word=>{
+    const wd=document.createElement('div'); wd.className='msg-word';
+    word.split('').forEach(letter=>{
+      const code=getCode(letter);
+      const lb=document.createElement('div'); lb.className='msg-lbox';
+      const inp=document.createElement('input');
+      inp.type='text'; inp.maxLength=1; inp.className='msg-inp';
+      inp.dataset.answer=letter; inp.dataset.code=code;
+      inp.addEventListener('input',e=>onMsgInput(e,letter));
+      inp.addEventListener('keydown',msgNav);
+      const num=document.createElement('div'); num.className='msg-code'; num.textContent=code;
+      lb.appendChild(inp); lb.appendChild(num); wd.appendChild(lb);
+    });
+    c.appendChild(wd);
+  });
+}
+
+function onMsgInput(e,correctLetter){
+  const inp=e.target;
+  const raw=inp.value.toUpperCase().replace(/[^A-Z]/g,'').slice(-1);
+  inp.value=raw; inp.classList.remove('ok','err');
+  if(!raw){updateMsgProgress();return;}
+  if(raw===correctLetter){
+    inp.classList.add('ok'); revealCipherKey(correctLetter);
+    const all=Array.from(document.querySelectorAll('.msg-inp'));
+    const idx=all.indexOf(inp);
+    const next=all.slice(idx+1).find(b=>!b.classList.contains('ok'));
+    if(next) setTimeout(()=>next.focus(),40);
+  } else { inp.classList.add('err'); }
+  updateMsgProgress();
+}
+
+function msgNav(e){
+  const all=Array.from(document.querySelectorAll('.msg-inp'));
+  const idx=all.indexOf(e.target);
+  if(e.key==='ArrowRight'||(e.key==='Tab'&&!e.shiftKey)){e.preventDefault();if(idx<all.length-1)all[idx+1].focus();}
+  else if(e.key==='ArrowLeft'||(e.key==='Tab'&&e.shiftKey)){e.preventDefault();if(idx>0)all[idx-1].focus();}
+}
+
+function updateMsgProgress(){
+  const all=Array.from(document.querySelectorAll('.msg-inp'));
+  const correct=all.filter(i=>i.value.toUpperCase()===i.dataset.answer).length;
+  document.getElementById('msgProgress').textContent=`${correct} / ${all.length} huruf terisi`;
+  document.getElementById('btnUnlock').disabled=correct!==all.length;
+}
+
+function buildCipherGrid(){
+  const grid=document.getElementById('cipherGrid'); grid.innerHTML='';
+  Object.entries(currentPacket.cipher).sort((a,b)=>Number(a[0])-Number(b[0])).forEach(([num,letter])=>{
+    const slot=document.createElement('div'); slot.className='ck-slot'; slot.id=`ck-${letter}`;
+    slot.innerHTML=`<span class="ck-num">${num}</span><span class="ck-letter">?</span>`;
+    grid.appendChild(slot);
+  });
+}
+
+function revealCipherKey(letter){
+  if(revealedKeys.has(letter))return;
+  revealedKeys.add(letter);
+  const slot=document.getElementById(`ck-${letter}`);
+  if(slot){slot.querySelector('.ck-letter').textContent=letter; slot.classList.add('known');}
+}
+
+function buildQuestions(){
+  const area=document.getElementById('qArea'); area.innerHTML='';
+  currentPacket.questions.forEach((item,i)=>{
+    const block=document.createElement('div'); block.className='qblock'; block.id=`qb-${i}`;
+    const qnum=document.createElement('p'); qnum.className='q-num'; qnum.textContent=`Pertanyaan ${i+1}`;
+    const qtext=document.createElement('p'); qtext.className='q-text'; qtext.textContent=item.q;
+    const ansWrap=buildAnswerBoxes(item.answer,i);
+    const done=document.createElement('p'); done.className='done-badge'; done.textContent=`✓ ${item.answer}`;
+    block.appendChild(qnum); block.appendChild(qtext); block.appendChild(ansWrap); block.appendChild(done);
+    area.appendChild(block);
+  });
+}
+
+function buildAnswerBoxes(answerStr,qIdx){
+  const wrap=document.createElement('div'); wrap.className='ans-wrap';
+  answerStr.split('').forEach(ch=>{
+    if(ch===' '){const sp=document.createElement('div');sp.className='ans-space';wrap.appendChild(sp);return;}
+    const code=getCode(ch); const inCipher=code!=='?';
+    const lb=document.createElement('div'); lb.className='ans-lbox';
+    if(!inCipher){
+      const pf=document.createElement('div'); pf.className='ans-prefill'; pf.textContent=ch;
+      const nm=document.createElement('div'); nm.className='ans-num'; nm.textContent='—';
+      lb.appendChild(pf); lb.appendChild(nm);
+    } else {
+      const inp=document.createElement('input');
+      inp.type='text'; inp.maxLength=1; inp.className='ans-inp';
+      inp.dataset.answer=ch; inp.dataset.code=code; inp.dataset.qidx=qIdx;
+      inp.addEventListener('input',e=>onAnsInput(e,qIdx));
+      inp.addEventListener('keydown',e=>ansNav(e,qIdx));
+      const nm=document.createElement('div'); nm.className='ans-num'; nm.textContent=code;
+      lb.appendChild(inp); lb.appendChild(nm);
+    }
+    wrap.appendChild(lb);
+  });
+  return wrap;
+}
+
+function onAnsInput(e,qIdx){
+  const inp=e.target;
+  const raw=inp.value.toUpperCase().replace(/[^A-Z]/g,'').slice(-1);
+  inp.value=raw; inp.classList.remove('ok','err');
+  if(!raw){checkQComplete(qIdx);return;}
+  if(raw===inp.dataset.answer){
+    inp.classList.add('ok'); revealCipherKey(raw);
+    setTimeout(()=>{
+      const all=Array.from(document.querySelectorAll(`.ans-inp[data-qidx="${qIdx}"]`));
+      const idx=all.indexOf(inp);
+      const next=all.slice(idx+1).find(b=>!b.classList.contains('ok'));
+      if(next) next.focus();
+    },40);
+  } else { inp.classList.add('err'); }
+  checkQComplete(qIdx);
+}
+
+function ansNav(e,qIdx){
+  const all=Array.from(document.querySelectorAll(`.ans-inp[data-qidx="${qIdx}"]`));
+  const idx=all.indexOf(e.target);
+  if(e.key==='ArrowRight'||(e.key==='Tab'&&!e.shiftKey)){e.preventDefault();if(idx<all.length-1)all[idx+1].focus();}
+  else if(e.key==='ArrowLeft'||(e.key==='Tab'&&e.shiftKey)){e.preventDefault();if(idx>0)all[idx-1].focus();}
+}
+
+function checkQComplete(qIdx){
+  if(answeredQ.has(qIdx))return;
+  const boxes=Array.from(document.querySelectorAll(`.ans-inp[data-qidx="${qIdx}"]`));
+  if(!boxes.length||!boxes.every(b=>b.value.toUpperCase()===b.dataset.answer))return;
+  answeredQ.add(qIdx);
+  const block=document.getElementById(`qb-${qIdx}`);
+  block.classList.add('answered');
+  boxes.forEach(b=>b.disabled=true);
+}
+
+function showFinish(){
+  stopTimer();
+  document.getElementById('finishMsg').textContent='✨ '+currentPacket.message+' ✨';
+  document.getElementById('finishTime').textContent=formatTime(seconds);
+  spawnConfetti();
+  showScreen('screen-finish');
+}
+
+function spawnConfetti(){
+  const wrap=document.getElementById('confettiWrap'); wrap.innerHTML='';
+  const colors=['#f5c842','#ff7728','#ffffff','#d9cce8','#3a9e6f','#ffb3d9','#724e91'];
+  for(let i=0;i<50;i++){
+    const dot=document.createElement('div'); dot.className='confetti-dot';
+    const size=6+Math.random()*14;
+    dot.style.cssText=`
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      bottom:-${size}px;
+      animation-duration:${3+Math.random()*5}s;
+      animation-delay:${Math.random()*2.5}s;
+      border-radius:${Math.random()>0.5?'50%':'4px'};
+    `;
+    wrap.appendChild(dot);
+  }
+}
+
+function resetGame(){
+  stopTimer(); seconds=0;
+  document.getElementById('timer-display').textContent='00:00';
+  document.getElementById('timer-display').className='';
+  document.getElementById('timer-bar').classList.remove('visible');
+  showScreen('screen-landing');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
