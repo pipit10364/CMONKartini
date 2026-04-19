@@ -540,6 +540,7 @@ html, body {
         <li><span class="rule-dot"></span><span>Kamu akan dapat satu paket soal secara acak</span></li>
         <li><span class="rule-dot"></span><span>Jawab tiap soal — huruf jawabanmu membuka cipher key</span></li>
         <li><span class="rule-dot"></span><span>Gunakan cipher key untuk decode secret message</span></li>
+        <li><span class="rule-dot"></span><span>Semua pertanyaan harus terjawab sebelum bisa reveal — no shortcuts! 🔒</span></li>
         <li><span class="rule-dot"></span><span>Timer mulai saat kamu klik tombol di bawah</span></li>
         <li><span class="rule-dot"></span><span>Screenshot waktumu saat selesai — tercepat menang!</span></li>
       </ul>
@@ -733,11 +734,18 @@ function msgNav(e){
   else if(e.key==='ArrowLeft'||(e.key==='Tab'&&e.shiftKey)){e.preventDefault();if(idx>0)all[idx-1].focus();}
 }
 
+function checkUnlock(){
+  const allMsg=Array.from(document.querySelectorAll('.msg-inp'));
+  const msgDone=allMsg.every(i=>i.value.toUpperCase()===i.dataset.answer);
+  const allQDone=answeredQ.size===currentPacket.questions.length;
+  document.getElementById('btnUnlock').disabled=!(msgDone&&allQDone);
+}
+
 function updateMsgProgress(){
   const all=Array.from(document.querySelectorAll('.msg-inp'));
   const correct=all.filter(i=>i.value.toUpperCase()===i.dataset.answer).length;
   document.getElementById('msgProgress').textContent=`${correct} / ${all.length} huruf terisi`;
-  document.getElementById('btnUnlock').disabled=correct!==all.length;
+  checkUnlock();
 }
 
 function buildCipherGrid(){
@@ -824,6 +832,7 @@ function checkQComplete(qIdx){
   answeredQ.add(qIdx);
   document.getElementById(`qb-${qIdx}`).classList.add('answered');
   boxes.forEach(b=>b.disabled=true);
+  checkUnlock();
 }
 
 function showFinish(){
