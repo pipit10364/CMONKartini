@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E7XSLGE5E5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E7XSLGE5E5');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMON × Kartini — Cryptogram Challenge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -685,6 +693,7 @@ function startGame(){
   document.getElementById('btnUnlock').disabled=true;
   showScreen('screen-game');
   startTimer();
+  gtag('event', 'game_start', {event_category:'cryptogram'});
 }
 
 function getCode(letter){
@@ -838,6 +847,7 @@ function checkQComplete(qIdx){
 function showFinish(){
   stopTimer();
   // Hide timer bar on finish screen
+  gtag('event', 'game_finish', {event_category:'cryptogram', value:seconds});
   document.getElementById('timer-bar').classList.remove('visible');
   document.getElementById('finishMsg').textContent='✨ '+currentPacket.message+' ✨';
   document.getElementById('finishTime').textContent=formatTime(seconds);
